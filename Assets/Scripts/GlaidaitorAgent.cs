@@ -25,7 +25,36 @@ public class GlaidaitorAgent : Agent
 
 
     private void HandleMovement(float[] action) {
+		Vector3 dirToGo = Vector3.zero;
+		Vector3 rotateDir = Vector3.zero;
 
+		if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
+		{
+			dirToGo = transform.forward * Mathf.Clamp(action[0], -1f, 1f);
+			rotateDir = transform.up * Mathf.Clamp(action[1], -1f, 1f);
+		}
+		else
+		{
+			switch ((int)(action[0]))
+			{
+				case 1:
+					dirToGo = transform.forward;
+					break;
+				case 2:
+					rotateDir = -transform.up;
+					break;
+				case 3:
+					rotateDir = transform.up;
+					break;
+			}
+		}
+		agentRigidbody.AddForce(dirToGo * moveSpeed, ForceMode.VelocityChange);
+		transform.Rotate(rotateDir, Time.fixedDeltaTime * turnSpeed);
+
+		if (agentRigidbody.velocity.sqrMagnitude > 25f) // slow it down
+		{
+			agentRB.velocity *= 0.95f;
+		}
 
     }
 
