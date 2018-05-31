@@ -7,9 +7,11 @@ public class GlaidaitorAgent : Agent
 
     private Vector3 arenaCenterPosition;
 
+    public GlaidaitorAcademy academy; 
+
     private GameObject agent;
-    [HideInInspector]
-    private GlaidaitorAcademy academy; 
+
+
 
     public override void InitializeAgent()
     {
