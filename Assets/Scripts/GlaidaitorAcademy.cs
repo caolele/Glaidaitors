@@ -7,7 +7,8 @@ public class GlaidaitorAcademy : Academy
 
     public float knockBackForce;
     public float hitReward;
-    public float offTheRingReward;
+    public float offTheRingReward {get; private set;}
+    public int arenaRadius {get; private set;}
 
     public override void AcademyReset()
     {
