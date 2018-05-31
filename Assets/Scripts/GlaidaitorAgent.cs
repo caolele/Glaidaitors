@@ -9,7 +9,7 @@ public class GlaidaitorAgent : Agent
 
     private Vector3 arenaCenterPosition;
 
-    public GlaidaitorAcademy academy; 
+    public GlaidaitorAcademy academy;
 
     private GameObject agent;
 
@@ -36,7 +36,7 @@ public class GlaidaitorAgent : Agent
 
 
         List<string>  localStrings = new List<string>();
-        
+
         foreach (var ray in (rayPer.Perceive(rayDistance, rayAngles, detectableObjects, 2.5f, -0.1f)))
         {
             localStrings.Add(ray.ToString("R"));
@@ -46,7 +46,7 @@ public class GlaidaitorAgent : Agent
                 Debug.Log(string.Join(",", localStrings));
                 localStrings.Clear();
             }
-            
+
         }
         // The current speed of the agent
         Vector3 localVelocity = transform.InverseTransformDirection(this.agentRigidbody.velocity);
@@ -68,7 +68,7 @@ public class GlaidaitorAgent : Agent
            HandleMovement(vectorAction);
            checkForDeath();
         } else {
-            print("STATE SPACE SHOULD BE CONTINUOUS");
+            //print("STATE SPACE SHOULD BE CONTINUOUS");
         }
 
     }
@@ -86,7 +86,7 @@ public class GlaidaitorAgent : Agent
     {
         Vector3 newPosition = getRandomNewPosition();
         Quaternion newRotation = getRandomNewQuaternionInXZPlane();
-    
+
         transform.position = newPosition;
         transform.rotation = newRotation;
         transform.gameObject.GetComponent<Rigidbody>().velocity = new Vector3(0f, 0f, 0f);
@@ -100,7 +100,7 @@ public class GlaidaitorAgent : Agent
         float offsetFromCenter = 2f;// Random.Range(0f, academy.arenaRadius);
         float radians = 0.4f; //Random.Range(0f, 360f) * Mathf.Deg2Rad;
         Vector3 newCoord = new Vector3(Mathf.Sin(radians), transform.position.y, Mathf.Cos(radians));
-        return offsetFromCenter * newCoord; 
+        return offsetFromCenter * newCoord;
     }
 
     private Quaternion getRandomNewQuaternionInXZPlane() {
