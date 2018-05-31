@@ -11,15 +11,31 @@ public class GlaidaitorAgent : Agent
 
     private GameObject agent;
 
+    private Rigidbody agentRigidbody;
+
+    RayPerception rayPer;
+
 
     public override void InitializeAgent()
     {
+        base.InitializeAgent();
         this.arenaCenterPosition = Vector3.zero;
+        this.agentRigidbody = GetComponent<Rigidbody>();
+        rayPer = GetComponent<RayPerception>();
     }
 
     public override void CollectObservations()
     {
-        //AddVectorObs(gameObject.transform.rotation.z);
+        // Looking around with raycasts
+        float rayDistance = 5f;
+        float[] rayAngles = { 20f, 90f, 160f, 45f, 135f, 70f, 110f };
+        string[] detectableObjects = { "sword", "shield", "body" };
+        AddVectorObs(rayPer.Perceive(rayDistance, rayAngles, detectableObjects, 0f, -0.1f));
+
+        // The current speed of the agent
+        Vector3 localVelocity = transform.InverseTransformDirection(this.agentRigidbody.velocity);
+        AddVectorObs(localVelocity.x);
+        AddVectorObs(localVelocity.z);
 
     }
 
