@@ -12,7 +12,6 @@ public class GlaidaitorAgent : Agent
     private GameObject agent;
 
 
-
     public override void InitializeAgent()
     {
         this.arenaCenterPosition = Vector3.zero;
@@ -56,9 +55,9 @@ public class GlaidaitorAgent : Agent
         Vector3 newPosition = getRandomNewPosition();
         Quaternion newRotation = getRandomNewQuaternionInXZPlane();
     
-        agent.transform.position = newPosition;
-        agent.transform.rotation = newRotation;
-        agent.GetComponent<Rigidbody>().velocity = new Vector3(0f, 0f, 0f);
+        transform.position = newPosition;
+        transform.rotation = newRotation;
+        transform.gameObject.GetComponent<Rigidbody>().velocity = new Vector3(0f, 0f, 0f);
 
         // gameObject.transform.rotation = new Quaternion(0f, 0f, 0f, 0f);
         // ball.GetComponent<Rigidbody>().velocity = new Vector3(0f, 0f, 0f);
