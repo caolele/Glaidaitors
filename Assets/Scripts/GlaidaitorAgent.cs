@@ -1,6 +1,8 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+
 using UnityEngine;
+
 
 public class GlaidaitorAgent : Agent
 {
@@ -28,10 +30,24 @@ public class GlaidaitorAgent : Agent
     {
         // Looking around with raycasts
         float rayDistance = 5f;
-        float[] rayAngles = { 20f, 90f, 160f, 45f, 135f, 70f, 110f };
+        float[] rayAngles = { 20f + 180f, 90f + 180f, 160f + 180f, 45f + 180f, 135f + 180f, 70f + 180f, 110f + 180f }  ;
         string[] detectableObjects = { "sword", "shield", "body" };
         AddVectorObs(rayPer.Perceive(rayDistance, rayAngles, detectableObjects, 0f, -0.1f));
 
+
+        List<string>  localStrings = new List<string>();
+        
+        foreach (var ray in (rayPer.Perceive(rayDistance, rayAngles, detectableObjects, 2.5f, -0.1f)))
+        {
+            localStrings.Add(ray.ToString("R"));
+            int lens = localStrings.Count;
+            if(lens == 5)
+            {
+                Debug.Log(string.Join(",", localStrings));
+                localStrings.Clear();
+            }
+            
+        }
         // The current speed of the agent
         Vector3 localVelocity = transform.InverseTransformDirection(this.agentRigidbody.velocity);
         AddVectorObs(localVelocity.x);
@@ -81,8 +97,8 @@ public class GlaidaitorAgent : Agent
     }
 
     private Vector3 getRandomNewPosition() {
-        float offsetFromCenter = Random.Range(0f, academy.arenaRadius);
-        float radians = Random.Range(0f, 360f) * Mathf.Deg2Rad;
+        float offsetFromCenter = 2f;// Random.Range(0f, academy.arenaRadius);
+        float radians = 0.4f; //Random.Range(0f, 360f) * Mathf.Deg2Rad;
         Vector3 newCoord = new Vector3(Mathf.Sin(radians), transform.position.y, Mathf.Cos(radians));
         return offsetFromCenter * newCoord; 
     }
