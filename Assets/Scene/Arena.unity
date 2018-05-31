@@ -199,7 +199,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9b7c76880660e4efe829bea299999380, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  brain: {fileID: 0}
+  brain: {fileID: 1927483530}
   agentParameters:
     agentCameras: []
     maxStep: 0
@@ -592,3 +592,5 @@ MonoBehaviour:
     resetParameters: []
   knockBackForce: 0
   hitReward: 0
+  offTheRingReward: 0
+  arenaRadius: 0
