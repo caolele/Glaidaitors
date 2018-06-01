@@ -10,7 +10,11 @@ public class GlaidaitorAcademy : Academy
     public float offTheRingReward;
     public int arenaRadius;
 
-
+    public override void InitializeAgent()
+    {
+        this.hitReward = 5.0f;
+        
+    }
 
     public override void AcademyReset()
     {
