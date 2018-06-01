@@ -17,8 +17,6 @@ public class GlaidaitorAcademy : Academy
     {
         this.hitReward = 5.0f;
         this.arenaRadius = platform.transform.localScale.z/2.0f;
-
-
     }
 
     public override void AcademyReset()
