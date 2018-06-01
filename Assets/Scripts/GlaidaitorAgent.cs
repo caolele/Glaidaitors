@@ -149,7 +149,7 @@ public class GlaidaitorAgent : Agent
     }
 
     private Vector3 getRandomNewPosition() {
-        float offsetFromCenter = Random.Range(0f, academy.arenaRadius);
+        float offsetFromCenter = Random.Range(0f, academy.arenaRadius/2.0f);
         float radians = Random.Range(0f, 360f) * Mathf.Deg2Rad;
         Vector3 newCoord = new Vector3(Mathf.Sin(radians), transform.position.y, Mathf.Cos(radians));
         return offsetFromCenter * newCoord; 
