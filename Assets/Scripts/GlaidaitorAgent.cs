@@ -129,35 +129,15 @@ public class GlaidaitorAgent : Agent
         }
 
 
-        Debug.Log(other.gameObject.name);
+        //Debug.Log(other.gameObject.name);
 
-        List<GameObject> hitGameobjects = FindObjectsWithTag(other.gameObject.transform, "sword");
-        foreach (var hitGameobject in hitGameobjects)
+        //List<GameObject> hitGameobjects = FindObjectsWithTag(other.gameObject.transform, "sword");
+        foreach (var hitGameobject in other.contacts)
         {
-            if (this.gameObject.name == "skeleton")
+            if (hitGameobject.thisCollider.tag == "body" && hitGameobject.otherCollider.tag == "sword")
             {
-                print(hitGameobject.name);
-            }
-            if (this.gameObject.name != hitGameobject.transform.root.gameObject.name)
-            {
-                foreach (ContactPoint contact in other.contacts)
-                {
-                    var colName = contact.thisCollider.tag;
-                    switch (colName)
-                    {
-                        case "sword":
-                            print("sword hit sword");
-                            break;
-                        case "body":
-                            print("sword hit body");
-                            AddReward(-0.5f);
-                            break;
-                        case "sheild":
-                            print("sword hit shield");
-                            break;
-                    }
-                }
-
+                print("body been hit");
+          
                 //print("Sword hit");
                 Vector3 averagePoint = Vector3.zero;
                 foreach (var point in other.contacts)
@@ -169,6 +149,9 @@ public class GlaidaitorAgent : Agent
                 //ApplyKnockback(academy.knockBackForce, firstPointOfContact);
                 ApplyKnockback(academy.knockBackForce, averagePoint);
                 AddReward(-academy.hitReward);
+
+            } else if (hitGameobject.thisCollider.tag == "sword" && hitGameobject.otherCollider.tag == "body") {
+                AddReward(academy.hitReward);
             }
         }
     }
