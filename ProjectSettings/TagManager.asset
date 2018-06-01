@@ -13,6 +13,7 @@ TagManager:
   - body
   - sword
   - shield
+  - arena
   layers:
   - Default
   - TransparentFX
