@@ -28,7 +28,7 @@ public class GlaidaitorAgent : Agent
         this.arenaCenterPosition = Vector3.zero;
         this.agentRigidbody = GetComponent<Rigidbody>();
         rayPer = GetComponent<RayPerception>();
-        this.moveSpeed = 1f;
+        this.moveSpeed = 0.5f;
         this.turnSpeed = 100f;
         this.agentCenter = findAgentCenter();
     }
@@ -121,22 +121,67 @@ public class GlaidaitorAgent : Agent
     void OnCollisionEnter(Collision other) {
         // If we had a cylinder collider we could just use the normal?
         print("On collision enter");
-
-        foreach (Transform child in transform)
+        if (other.gameObject.tag == "arena")
         {
-            if (child.gameObject.tag == "sword")
+            return;
+        }
+
+
+        Debug.Log(other.gameObject.name);
+
+        List<GameObject> hitGameobjects = FindObjectsWithTag(other.gameObject.transform, "sword");
+        foreach (var hitGameobject in hitGameobjects)
+        {
+            if (this.gameObject.name != hitGameobject.transform.root.gameObject.name)
             {
                 print("Sword hit");
+                Vector3 averagePoint = Vector3.zero;
+                foreach (var point in other.contacts)
+                {
+                    averagePoint += point.point;
+                }
+                averagePoint /= other.contacts.Length;
                 Vector3 firstPointOfContact = other.contacts[0].point;
-                ApplyKnockback(academy.knockBackForce, firstPointOfContact);
+                //ApplyKnockback(academy.knockBackForce, firstPointOfContact);
+                ApplyKnockback(academy.knockBackForce, averagePoint);
                 AddReward(-academy.hitReward);
             }
         }
 
+        //foreach (Transform child in transform)
+        //{            
+        //    if (child.gameObject.tag == "sword")
+        //    {
+        //        print("Sword hit");
+        //        Vector3 firstPointOfContact = other.contacts[0].point;
+        //        ApplyKnockback(academy.knockBackForce, firstPointOfContact);
+        //        AddReward(-academy.hitReward);
+        //    }
+        //}
+
+    }
+
+    public List<GameObject> FindObjectsWithTag(Transform parent, string tag)
+    {
+        List<GameObject> taggedGameObjects = new List<GameObject>();
+
+        for (int i = 0; i < parent.childCount; i++)
+        {
+            Transform child = parent.GetChild(i);
+            if (child.tag == tag)
+            {
+                taggedGameObjects.Add(child.gameObject);
+            }
+            if (child.childCount > 0)
+            {
+                taggedGameObjects.AddRange(FindObjectsWithTag(child, tag));
+            }
+        }
+        return taggedGameObjects;
     }
 
     private void ApplyKnockback(float knockBackForce, Vector3 contactPoint) {
-        Vector3 knockbackDirection = findKnockbackDirection(contactPoint);
+        Vector3 knockbackDirection = -findKnockbackDirection(contactPoint);
 		agentRigidbody.AddForce(knockbackDirection * academy.knockBackForce, ForceMode.VelocityChange);
     }
 
