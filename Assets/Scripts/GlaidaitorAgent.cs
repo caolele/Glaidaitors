@@ -118,7 +118,8 @@ public class GlaidaitorAgent : Agent
     }
 
     // This is used to
-    void OnCollisionEnter(Collision other) {
+    void OnCollisionEnter(Collision other)
+    {
         // If we had a cylinder collider we could just use the normal?
         print("On collision enter");
         if (other.gameObject.tag == "arena")
@@ -132,9 +133,30 @@ public class GlaidaitorAgent : Agent
         List<GameObject> hitGameobjects = FindObjectsWithTag(other.gameObject.transform, "sword");
         foreach (var hitGameobject in hitGameobjects)
         {
+            if (this.gameObject.name == "skeleton")
+            {
+                print(hitGameobject.name);
+            }
             if (this.gameObject.name != hitGameobject.transform.root.gameObject.name)
             {
-                print("Sword hit");
+                foreach (ContactPoint contact in other.contacts)
+                {
+                    var colName = contact.thisCollider.tag;
+                    switch (colName)
+                    {
+                        case "sword":
+                            print("sword hit sword");
+                            break;
+                        case "body":
+                            print("sword hit body");
+                            break;
+                        case "sheild":
+                            print("sword hit shield");
+                            break;
+                    }
+                }
+
+                //print("Sword hit");
                 Vector3 averagePoint = Vector3.zero;
                 foreach (var point in other.contacts)
                 {
@@ -186,7 +208,7 @@ public class GlaidaitorAgent : Agent
     }
 
     private Vector3 findKnockbackDirection(Vector3 contactPoint) {
-        return new Vector3(contactPoint.x - this.agentCenter.x, 0f, contactPoint.z - this.agentCenter.z).normalized;      //(contactPoint - this.agentCenter).normalized;
+        return new Vector3(contactPoint.x - this.transform.position.x, 0f, contactPoint.z - this.transform.position.z).normalized;      //(contactPoint - this.agentCenter).normalized;
     }
 
     public override void AgentReset()
