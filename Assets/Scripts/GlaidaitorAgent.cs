@@ -1,15 +1,13 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-
 using UnityEngine;
-
 
 public class GlaidaitorAgent : Agent
 {
 
     private Vector3 arenaCenterPosition;
 
-    public GlaidaitorAcademy academy;
+    public GlaidaitorAcademy academy; 
 
     private GameObject agent;
 
@@ -28,14 +26,13 @@ public class GlaidaitorAgent : Agent
         this.arenaCenterPosition = Vector3.zero;
         this.agentRigidbody = GetComponent<Rigidbody>();
         rayPer = GetComponent<RayPerception>();
-        this.moveSpeed = 0.3f;
+        this.moveSpeed = 1f;
         this.turnSpeed = 100f;
         this.agentCenter = findAgentCenter();
     }
 
     void OnDrawGizmos() {
         if (agentCenter != null) {
-            print(agentCenter);
             Gizmos.DrawSphere(agentCenter, 1);
         }
     }
@@ -44,7 +41,8 @@ public class GlaidaitorAgent : Agent
         Transform[] ts = transform.GetComponentsInChildren<Transform>(true);
         foreach (Transform t in ts) {
             if (t.gameObject.name == "limbs") {
-                return t.gameObject.GetComponent<BoxCollider>().center;
+                Vector3 colliderCenter = t.gameObject.GetComponent<BoxCollider>().center;
+                return transform.TransformPoint(colliderCenter);
             }
         }
         print("DIDNT FIND TORSO");
@@ -56,23 +54,10 @@ public class GlaidaitorAgent : Agent
     {
         // Looking around with raycasts
         float rayDistance = 5f;
-        float[] rayAngles = { 20f + 180f, 90f + 180f, 160f + 180f, 45f + 180f, 135f + 180f, 70f + 180f, 110f + 180f }  ;
+        float[] rayAngles = { 20f, 90f, 160f, 45f, 135f, 70f, 110f };
         string[] detectableObjects = { "sword", "shield", "body" };
         AddVectorObs(rayPer.Perceive(rayDistance, rayAngles, detectableObjects, 0f, -0.1f));
 
-        // Debuging code
-        List<string>  localStrings = new List<string>();
-        foreach (var ray in (rayPer.Perceive(rayDistance, rayAngles, detectableObjects, 2.5f, -0.1f)))
-        {
-            localStrings.Add(ray.ToString("R"));
-            int lens = localStrings.Count;
-            if(lens == 5)
-            {
-                Debug.Log(string.Join(",", localStrings));
-                localStrings.Clear();
-            }
-
-        }
         // The current speed of the agent
         Vector3 localVelocity = transform.InverseTransformDirection(this.agentRigidbody.velocity);
         AddVectorObs(localVelocity.x);
@@ -119,7 +104,6 @@ public class GlaidaitorAgent : Agent
     {
        HandleMovement(vectorAction);
        checkForDeath();
-
     }
 
     private void checkForDeath() {
@@ -127,18 +111,20 @@ public class GlaidaitorAgent : Agent
 
         if (distanceFromArenaCenter > academy.arenaRadius) {
             Done();
-            SetReward(-academy.offTheRingReward);
+            AddReward(-academy.offTheRingReward);
         }
     }
 
+    // This is used to 
     void OnCollisionEnter(Collision other) {
-        // If we had a cylinder collider we could just use the normal to find contact point?
+        // If we had a cylinder collider we could just use the normal?
         print("On collision enter");
         print(other.gameObject.tag);
         if (other.gameObject.CompareTag("sword")) {
             print("Sword hit");
             Vector3 firstPointOfContact = other.contacts[0].point;
             ApplyKnockback(academy.knockBackForce, firstPointOfContact);
+            AddReward(-academy.hitReward);
         }
     }
 
@@ -153,19 +139,20 @@ public class GlaidaitorAgent : Agent
 
     public override void AgentReset()
     {
-        // Vector3 newPosition = getRandomNewPosition();
-        // Quaternion newRotation = getRandomNewQuaternionInXZPlane();
+        Vector3 newPosition = getRandomNewPosition();
+        Quaternion newRotation = getRandomNewQuaternionInXZPlane();
     
-        // transform.position = newPosition;
-        // transform.rotation = newRotation;
-        // transform.gameObject.GetComponent<Rigidbody>().velocity = new Vector3(0f, 0f, 0f);
+        transform.position = newPosition;
+        transform.rotation = newRotation;
+        transform.gameObject.GetComponent<Rigidbody>().velocity = new Vector3(0f, 0f, 0f);
+
     }
 
     private Vector3 getRandomNewPosition() {
-        float offsetFromCenter = 2f;// Random.Range(0f, academy.arenaRadius);
-        float radians = 0.4f; //Random.Range(0f, 360f) * Mathf.Deg2Rad;
+        float offsetFromCenter = Random.Range(0f, academy.arenaRadius/2.0f);
+        float radians = Random.Range(0f, 360f) * Mathf.Deg2Rad;
         Vector3 newCoord = new Vector3(Mathf.Sin(radians), transform.position.y, Mathf.Cos(radians));
-        return offsetFromCenter * newCoord;
+        return offsetFromCenter * newCoord; 
     }
 
     private Quaternion getRandomNewQuaternionInXZPlane() {
