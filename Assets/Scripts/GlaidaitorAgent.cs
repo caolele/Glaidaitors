@@ -21,6 +21,8 @@ public class GlaidaitorAgent : Agent
     private float moveSpeed;
     private float turnSpeed;
 
+    public GameObject platform;
+
 
     public override void InitializeAgent()
     {
@@ -68,7 +70,7 @@ public class GlaidaitorAgent : Agent
             int lens = localStrings.Count;
             if(lens == 5)
             {
-                Debug.Log(string.Join(",", localStrings));
+                //Debug.Log(string.Join(",", localStrings));
                 localStrings.Clear();
             }
 
@@ -124,10 +126,9 @@ public class GlaidaitorAgent : Agent
 
     private void checkForDeath() {
         float distanceFromArenaCenter = Vector3.Distance(this.transform.position, this.arenaCenterPosition);
-
-        if (distanceFromArenaCenter > academy.arenaRadius) {
+        if (distanceFromArenaCenter > platform.transform.localScale.z) {
             Done();
-            SetReward(-academy.offTheRingReward);
+            AddReward(-academy.offTheRingReward);
         }
     }
 
@@ -153,12 +154,12 @@ public class GlaidaitorAgent : Agent
 
     public override void AgentReset()
     {
-        // Vector3 newPosition = getRandomNewPosition();
-        // Quaternion newRotation = getRandomNewQuaternionInXZPlane();
+         Vector3 newPosition = getRandomNewPosition();
+         Quaternion newRotation = getRandomNewQuaternionInXZPlane();
     
-        // transform.position = newPosition;
-        // transform.rotation = newRotation;
-        // transform.gameObject.GetComponent<Rigidbody>().velocity = new Vector3(0f, 0f, 0f);
+         transform.position = newPosition;
+         transform.rotation = newRotation;
+         transform.gameObject.GetComponent<Rigidbody>().velocity = new Vector3(0f, 0f, 0f);
     }
 
     private Vector3 getRandomNewPosition() {
