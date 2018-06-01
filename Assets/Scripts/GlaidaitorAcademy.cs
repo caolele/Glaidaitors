@@ -10,6 +10,8 @@ public class GlaidaitorAcademy : Academy
     public float offTheRingReward;
     public int arenaRadius;
 
+
+
     public override void AcademyReset()
     {
 

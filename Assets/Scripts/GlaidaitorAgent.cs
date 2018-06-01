@@ -140,6 +140,7 @@ public class GlaidaitorAgent : Agent
             print("Sword hit");
             Vector3 firstPointOfContact = other.contacts[0].point;
             ApplyKnockback(academy.knockBackForce, firstPointOfContact);
+            AddReward(academy.hitReward);
         }
     }
 
