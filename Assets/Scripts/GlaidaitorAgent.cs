@@ -138,16 +138,13 @@ public class GlaidaitorAgent : Agent
 
     public override void AgentReset()
     {
-        // Vector3 newPosition = getRandomNewPosition();
-        // Quaternion newRotation = getRandomNewQuaternionInXZPlane();
+        Vector3 newPosition = getRandomNewPosition();
+        Quaternion newRotation = getRandomNewQuaternionInXZPlane();
     
-        // transform.position = newPosition;
-        // transform.rotation = newRotation;
-        // transform.gameObject.GetComponent<Rigidbody>().velocity = new Vector3(0f, 0f, 0f);
+        transform.position = newPosition;
+        transform.rotation = newRotation;
+        transform.gameObject.GetComponent<Rigidbody>().velocity = new Vector3(0f, 0f, 0f);
 
-        // gameObject.transform.rotation = new Quaternion(0f, 0f, 0f, 0f);
-        // ball.GetComponent<Rigidbody>().velocity = new Vector3(0f, 0f, 0f);
-        // ball.transform.position = new Vector3(Random.Range(-1.5f, 1.5f), 4f, Random.Range(-1.5f, 1.5f)) + gameObject.transform.position;
     }
 
     private Vector3 getRandomNewPosition() {
