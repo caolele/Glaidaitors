@@ -105,6 +105,7 @@ public class GlaidaitorAgent : Agent
     public override void AgentAction(float[] vectorAction, string textAction)
     {
        HandleMovement(vectorAction);
+       AddReward(0.005f);
        checkForDeath();
     }
 
@@ -122,16 +123,17 @@ public class GlaidaitorAgent : Agent
         // If we had a cylinder collider we could just use the normal?
         print("On collision enter");
 
-        foreach (Transform child in transform)
-        {
-            if (child.gameObject.tag == "sword")
-            {
-                print("Sword hit");
-                Vector3 firstPointOfContact = other.contacts[0].point;
-                ApplyKnockback(academy.knockBackForce, firstPointOfContact);
-                AddReward(-academy.hitReward);
-            }
-        }
+        // foreach (Transform child in transform)
+        // {
+        //     if (child.gameObject.tag == "sword")
+        //     {
+        //         print("Sword hit");
+        //         Vector3 firstPointOfContact = other.contacts[0].point;
+        //         ApplyKnockback(academy.knockBackForce, firstPointOfContact);
+        //         AddReward(-academy.hitReward);
+        //     }
+        // }
+        AddReward(-1.0f);
 
     }
 
@@ -146,12 +148,12 @@ public class GlaidaitorAgent : Agent
 
     public override void AgentReset()
     {
-        /* Vector3 newPosition = getRandomNewPosition();
+        Vector3 newPosition = getRandomNewPosition();
         Quaternion newRotation = getRandomNewQuaternionInXZPlane();
 
         transform.position = newPosition;
         transform.rotation = newRotation;
-        transform.gameObject.GetComponent<Rigidbody>().velocity = new Vector3(0f, 0f, 0f);*/
+        transform.gameObject.GetComponent<Rigidbody>().velocity = new Vector3(0f, 0f, 0f);
         
     }
 
