@@ -12,8 +12,12 @@ public class GlaidaitorAgent : Agent
     private GameObject agent;
 
     private Rigidbody agentRigidbody;
+    private Vector3 agentCenter; // Used to calculate knockback direction
 
     RayPerception rayPer;
+
+    private float moveSpeed;
+    private float turnSpeed;
 
 
     public override void InitializeAgent()
@@ -22,6 +26,28 @@ public class GlaidaitorAgent : Agent
         this.arenaCenterPosition = Vector3.zero;
         this.agentRigidbody = GetComponent<Rigidbody>();
         rayPer = GetComponent<RayPerception>();
+        this.moveSpeed = 0.3f;
+        this.turnSpeed = 100f;
+        this.agentCenter = findAgentCenter();
+    }
+
+    void OnDrawGizmos() {
+        if (agentCenter != null) {
+            print(agentCenter);
+            Gizmos.DrawSphere(agentCenter, 1);
+        }
+    }
+
+    private Vector3 findAgentCenter() {
+        Transform[] ts = transform.GetComponentsInChildren<Transform>(true);
+        foreach (Transform t in ts) {
+            if (t.gameObject.name == "limbs") {
+                return t.gameObject.GetComponent<BoxCollider>().center;
+            }
+        }
+        print("DIDNT FIND TORSO");
+        return new Vector3(-999f, -999f, -999f); // Super hacky, fix
+
     }
 
     public override void CollectObservations()
@@ -54,7 +80,7 @@ public class GlaidaitorAgent : Agent
 			switch ((int)(action[0]))
 			{
 				case 1:
-					dirToGo = transform.forward;
+					dirToGo = -transform.forward;
 					break;
 				case 2:
 					rotateDir = -transform.up;
@@ -69,7 +95,7 @@ public class GlaidaitorAgent : Agent
 
 		if (agentRigidbody.velocity.sqrMagnitude > 25f) // slow it down
 		{
-			agentRB.velocity *= 0.95f;
+			agentRigidbody.velocity *= 0.95f;
 		}
 
     }
@@ -81,7 +107,8 @@ public class GlaidaitorAgent : Agent
            HandleMovement(vectorAction);
            checkForDeath();
         } else {
-            print("STATE SPACE SHOULD BE CONTINUOUS");
+           HandleMovement(vectorAction);
+            // print("STATE SPACE SHOULD BE CONTINUOUS");
         }
 
     }
@@ -95,14 +122,35 @@ public class GlaidaitorAgent : Agent
         }
     }
 
+    // This is used to 
+    void OnCollisionEnter(Collision other) {
+        // If we had a cylinder collider we could just use the normal?
+        print("On collision enter");
+        print(other.gameObject.tag);
+        if (other.gameObject.CompareTag("sword")) {
+            print("Sword hit");
+            Vector3 firstPointOfContact = other.contacts[0].point;
+            ApplyKnockback(academy.knockBackForce, firstPointOfContact);
+        }
+    }
+
+    private void ApplyKnockback(float knockBackForce, Vector3 contactPoint) {
+        Vector3 knockbackDirection = findKnockbackDirection(contactPoint);
+		agentRigidbody.AddForce(knockbackDirection * academy.knockBackForce, ForceMode.VelocityChange);
+    }
+
+    private Vector3 findKnockbackDirection(Vector3 contactPoint) {
+        return (this.agentCenter - contactPoint).normalized;
+    }
+
     public override void AgentReset()
     {
-        Vector3 newPosition = getRandomNewPosition();
-        Quaternion newRotation = getRandomNewQuaternionInXZPlane();
+        // Vector3 newPosition = getRandomNewPosition();
+        // Quaternion newRotation = getRandomNewQuaternionInXZPlane();
     
-        transform.position = newPosition;
-        transform.rotation = newRotation;
-        transform.gameObject.GetComponent<Rigidbody>().velocity = new Vector3(0f, 0f, 0f);
+        // transform.position = newPosition;
+        // transform.rotation = newRotation;
+        // transform.gameObject.GetComponent<Rigidbody>().velocity = new Vector3(0f, 0f, 0f);
 
         // gameObject.transform.rotation = new Quaternion(0f, 0f, 0f, 0f);
         // ball.GetComponent<Rigidbody>().velocity = new Vector3(0f, 0f, 0f);
