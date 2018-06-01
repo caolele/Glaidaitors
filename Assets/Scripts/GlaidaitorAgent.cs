@@ -19,6 +19,8 @@ public class GlaidaitorAgent : Agent
     private float moveSpeed;
     private float turnSpeed;
 
+    public GameObject sword;
+
 
     public override void InitializeAgent()
     {
@@ -118,14 +120,19 @@ public class GlaidaitorAgent : Agent
     // This is used to
     void OnCollisionEnter(Collision other) {
         // If we had a cylinder collider we could just use the normal?
-        //print("On collision enter");
-        //print(other.gameObject.tag);
-        if (other.gameObject.CompareTag("sword")) {
-            //print("Sword hit");
-            Vector3 firstPointOfContact = other.contacts[0].point;
-            ApplyKnockback(academy.knockBackForce, firstPointOfContact);
-            AddReward(-academy.hitReward);
+        print("On collision enter");
+
+        foreach (Transform child in transform)
+        {
+            if (child.gameObject.tag == "sword")
+            {
+                print("Sword hit");
+                Vector3 firstPointOfContact = other.contacts[0].point;
+                ApplyKnockback(academy.knockBackForce, firstPointOfContact);
+                AddReward(-academy.hitReward);
+            }
         }
+
     }
 
     private void ApplyKnockback(float knockBackForce, Vector3 contactPoint) {
@@ -134,7 +141,7 @@ public class GlaidaitorAgent : Agent
     }
 
     private Vector3 findKnockbackDirection(Vector3 contactPoint) {
-        return (this.agentCenter - contactPoint).normalized;
+        return new Vector3(contactPoint.x - this.agentCenter.x, 0f, contactPoint.z - this.agentCenter.z).normalized;      //(contactPoint - this.agentCenter).normalized;
     }
 
     public override void AgentReset()

@@ -1,11 +1,12 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class GlaidaitorAcademy : Academy
 {
-
+    [HideInInspector]
     public float knockBackForce;
+
     public float hitReward;
     public float offTheRingReward;
     [HideInInspector]
@@ -17,6 +18,9 @@ public class GlaidaitorAcademy : Academy
     {
         this.hitReward = 5.0f;
         this.arenaRadius = platform.transform.localScale.z/2.0f;
+        this.knockBackForce = 20.0f;
+
+
     }
 
     public override void AcademyReset()
