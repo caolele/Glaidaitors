@@ -14,8 +14,12 @@ public class GlaidaitorAgent : Agent
     private GameObject agent;
 
     private Rigidbody agentRigidbody;
+    private Vector3 agentCenter; // Used to calculate knockback direction
 
     RayPerception rayPer;
+
+    private float moveSpeed;
+    private float turnSpeed;
 
 
     public override void InitializeAgent()
@@ -24,6 +28,28 @@ public class GlaidaitorAgent : Agent
         this.arenaCenterPosition = Vector3.zero;
         this.agentRigidbody = GetComponent<Rigidbody>();
         rayPer = GetComponent<RayPerception>();
+        this.moveSpeed = 0.3f;
+        this.turnSpeed = 100f;
+        this.agentCenter = findAgentCenter();
+    }
+
+    void OnDrawGizmos() {
+        if (agentCenter != null) {
+            print(agentCenter);
+            Gizmos.DrawSphere(agentCenter, 1);
+        }
+    }
+
+    private Vector3 findAgentCenter() {
+        Transform[] ts = transform.GetComponentsInChildren<Transform>(true);
+        foreach (Transform t in ts) {
+            if (t.gameObject.name == "limbs") {
+                return t.gameObject.GetComponent<BoxCollider>().center;
+            }
+        }
+        print("DIDNT FIND TORSO");
+        return new Vector3(-999f, -999f, -999f); // Super hacky, fix
+
     }
 
     public override void CollectObservations()
@@ -34,9 +60,8 @@ public class GlaidaitorAgent : Agent
         string[] detectableObjects = { "sword", "shield", "body" };
         AddVectorObs(rayPer.Perceive(rayDistance, rayAngles, detectableObjects, 0f, -0.1f));
 
-
+        // Debuging code
         List<string>  localStrings = new List<string>();
-
         foreach (var ray in (rayPer.Perceive(rayDistance, rayAngles, detectableObjects, 2.5f, -0.1f)))
         {
             localStrings.Add(ray.ToString("R"));
@@ -57,19 +82,43 @@ public class GlaidaitorAgent : Agent
 
 
     private void HandleMovement(float[] action) {
+		Vector3 dirToGo = Vector3.zero;
+		Vector3 rotateDir = Vector3.zero;
 
+		if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
+		{
+			dirToGo = transform.forward * Mathf.Clamp(action[0], -1f, 1f);
+			rotateDir = transform.up * Mathf.Clamp(action[1], -1f, 1f);
+		}
+		else
+		{
+			switch ((int)(action[0]))
+			{
+				case 1:
+					dirToGo = -transform.forward;
+					break;
+				case 2:
+					rotateDir = -transform.up;
+					break;
+				case 3:
+					rotateDir = transform.up;
+					break;
+			}
+		}
+		agentRigidbody.AddForce(dirToGo * moveSpeed, ForceMode.VelocityChange);
+		transform.Rotate(rotateDir, Time.fixedDeltaTime * turnSpeed);
+
+		if (agentRigidbody.velocity.sqrMagnitude > 25f) // slow it down
+		{
+			agentRigidbody.velocity *= 0.95f;
+		}
 
     }
 
     public override void AgentAction(float[] vectorAction, string textAction)
     {
-        if (brain.brainParameters.vectorActionSpaceType == SpaceType.continuous)
-        {
-           HandleMovement(vectorAction);
-           checkForDeath();
-        } else {
-            //print("STATE SPACE SHOULD BE CONTINUOUS");
-        }
+       HandleMovement(vectorAction);
+       checkForDeath();
 
     }
 
@@ -82,18 +131,34 @@ public class GlaidaitorAgent : Agent
         }
     }
 
+    void OnCollisionEnter(Collision other) {
+        // If we had a cylinder collider we could just use the normal to find contact point?
+        print("On collision enter");
+        print(other.gameObject.tag);
+        if (other.gameObject.CompareTag("sword")) {
+            print("Sword hit");
+            Vector3 firstPointOfContact = other.contacts[0].point;
+            ApplyKnockback(academy.knockBackForce, firstPointOfContact);
+        }
+    }
+
+    private void ApplyKnockback(float knockBackForce, Vector3 contactPoint) {
+        Vector3 knockbackDirection = findKnockbackDirection(contactPoint);
+		agentRigidbody.AddForce(knockbackDirection * academy.knockBackForce, ForceMode.VelocityChange);
+    }
+
+    private Vector3 findKnockbackDirection(Vector3 contactPoint) {
+        return (this.agentCenter - contactPoint).normalized;
+    }
+
     public override void AgentReset()
     {
-        Vector3 newPosition = getRandomNewPosition();
-        Quaternion newRotation = getRandomNewQuaternionInXZPlane();
-
-        transform.position = newPosition;
-        transform.rotation = newRotation;
-        transform.gameObject.GetComponent<Rigidbody>().velocity = new Vector3(0f, 0f, 0f);
-
-        // gameObject.transform.rotation = new Quaternion(0f, 0f, 0f, 0f);
-        // ball.GetComponent<Rigidbody>().velocity = new Vector3(0f, 0f, 0f);
-        // ball.transform.position = new Vector3(Random.Range(-1.5f, 1.5f), 4f, Random.Range(-1.5f, 1.5f)) + gameObject.transform.position;
+        // Vector3 newPosition = getRandomNewPosition();
+        // Quaternion newRotation = getRandomNewQuaternionInXZPlane();
+    
+        // transform.position = newPosition;
+        // transform.rotation = newRotation;
+        // transform.gameObject.GetComponent<Rigidbody>().velocity = new Vector3(0f, 0f, 0f);
     }
 
     private Vector3 getRandomNewPosition() {
