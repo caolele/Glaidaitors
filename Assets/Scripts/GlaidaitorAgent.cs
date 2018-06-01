@@ -150,6 +150,7 @@ public class GlaidaitorAgent : Agent
                             break;
                         case "body":
                             print("sword hit body");
+                            AddReward(-0.5f);
                             break;
                         case "sheild":
                             print("sword hit shield");
@@ -168,8 +169,6 @@ public class GlaidaitorAgent : Agent
                 //ApplyKnockback(academy.knockBackForce, firstPointOfContact);
                 ApplyKnockback(academy.knockBackForce, averagePoint);
                 AddReward(-academy.hitReward);
-                print("================================");
-                print(-academy.hitReward);
             }
         }
     }
