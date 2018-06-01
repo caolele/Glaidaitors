@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class GlaidaitorAgent : Agent
 {
+    public GameObject opponentObj;
+
+    private GlaidaitorAgent opponentAgent;
 
     private Vector3 arenaCenterPosition;
 
@@ -31,12 +34,8 @@ public class GlaidaitorAgent : Agent
         this.moveSpeed = 0.5f;
         this.turnSpeed = 100f;
         this.agentCenter = findAgentCenter();
-    }
 
-    void OnDrawGizmos() {
-        if (agentCenter != null) {
-            Gizmos.DrawSphere(agentCenter, 1);
-        }
+        this.opponentAgent = opponentObj.GetComponent<GlaidaitorAgent>();
     }
 
     private Vector3 findAgentCenter() {
@@ -115,6 +114,7 @@ public class GlaidaitorAgent : Agent
         if (distanceFromArenaCenter > academy.arenaRadius) {
             Done();
             AddReward(-academy.offTheRingReward);
+            opponentAgent.AddReward(academy.offTheRingReward);
         }
     }
 
@@ -146,6 +146,8 @@ public class GlaidaitorAgent : Agent
                 //ApplyKnockback(academy.knockBackForce, firstPointOfContact);
                 ApplyKnockback(academy.knockBackForce, averagePoint);
                 AddReward(-academy.hitReward);
+                print("================================");
+                print(-academy.hitReward);
             }
         }
     }
