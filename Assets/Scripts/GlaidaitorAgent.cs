@@ -7,7 +7,7 @@ public class GlaidaitorAgent : Agent
 
     private Vector3 arenaCenterPosition;
 
-    public GlaidaitorAcademy academy; 
+    public GlaidaitorAcademy academy;
 
     private GameObject agent;
 
@@ -47,7 +47,7 @@ public class GlaidaitorAgent : Agent
                 return transform.TransformPoint(colliderCenter);
             }
         }
-        print("DIDNT FIND TORSO");
+        //print("DIDNT FIND TORSO");
         return new Vector3(-999f, -999f, -999f); // Super hacky, fix
 
     }
@@ -117,7 +117,7 @@ public class GlaidaitorAgent : Agent
         }
     }
 
-    // This is used to 
+    // This is used to
     void OnCollisionEnter(Collision other) {
         // If we had a cylinder collider we could just use the normal?
         print("On collision enter");
@@ -146,20 +146,20 @@ public class GlaidaitorAgent : Agent
 
     public override void AgentReset()
     {
-        Vector3 newPosition = getRandomNewPosition();
+        /* Vector3 newPosition = getRandomNewPosition();
         Quaternion newRotation = getRandomNewQuaternionInXZPlane();
-    
+
         transform.position = newPosition;
         transform.rotation = newRotation;
-        transform.gameObject.GetComponent<Rigidbody>().velocity = new Vector3(0f, 0f, 0f);
-
+        transform.gameObject.GetComponent<Rigidbody>().velocity = new Vector3(0f, 0f, 0f);*/
+        
     }
 
     private Vector3 getRandomNewPosition() {
         float offsetFromCenter = Random.Range(0f, academy.arenaRadius/2.0f);
         float radians = Random.Range(0f, 360f) * Mathf.Deg2Rad;
         Vector3 newCoord = new Vector3(Mathf.Sin(radians), transform.position.y, Mathf.Cos(radians));
-        return offsetFromCenter * newCoord; 
+        return offsetFromCenter * newCoord;
     }
 
     private Quaternion getRandomNewQuaternionInXZPlane() {
