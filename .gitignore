@@ -5,6 +5,9 @@
 [Bb]uilds/
 Assets/AssetStoreTools*
 
+.DS_Store
+*.local
+
 # Visual Studio cache directory
 .vs/
 
@@ -46,3 +49,6 @@ cscope.*
 
 # VIM session
 Session.vim
+
+# python
+__pycache__
